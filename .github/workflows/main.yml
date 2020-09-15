@@ -1,0 +1,36 @@
+name: End-to-end tests
+on: [push]
+jobs:
+  cypress-run:
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+           node-version: '12.x'
+
+      - name: npm install and build
+        run: |
+           npm install
+           npm run build --if-present
+
+      - name: Runs tests
+        run: |
+           node cypress_runner -b electron
+
+      - name: Upload Artifacts:Reports
+        uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: cypress-reports
+          path: cypress/reports
+
+      - name: Upload Artifacts:Videos
+        uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos
