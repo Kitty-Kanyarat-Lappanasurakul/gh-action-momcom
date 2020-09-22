@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:58:21.086Z",
+    "end": "2020-09-22T06:58:48.584Z",
+    "duration": 27498,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "2e3e165c-9c69-49ce-97c7-5b6e5b2032b9",
+      "title": "",
+      "fullFile": "cypress/integration/D_06_Article_Page.js",
+      "file": "cypress/integration/D_06_Article_Page.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "2b5d9395-46e2-468c-a995-fd54362b52ed",
+          "title": "MOMCOM_D_06_Article_Page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify NORMAL ARTICLE page working properly",
+              "fullTitle": "MOMCOM_D_06_Article_Page Verify NORMAL ARTICLE page working properly",
+              "timedOut": null,
+              "duration": 25728,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var publishdatetwo;\nvar ARTICLE_SLUG;\nvar isoDate = new Date().toISOString();\ncy.request('https://mom.com/api/spaces/9l3tjzgyn9gr/environments/master/entries?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&include=1&limit=5&content_type=post&order=-fields.publishDate&fields.publishDate%5Blte%5D=' + isoDate + '&fields.tags[exists]=true&fields.postType=article&fields.updatedDate[exists]=false').then(function (response) {\n  cy.log(response);\n  cy.log('above it the response'); // const POST_SLUG = response.body.data.postCollection.items[0].slug\n  var POST_SLUG = response.body.items[0].fields.slug; // const POST_CATEGORY = response.body.data.postCollection.items[0].mainCategory.slug\n  var POST_CATEGORY = response.body.items[0].fields.displayMainCategorySlug;\n  ARTICLE_SLUG = '/' + POST_CATEGORY + '/' + POST_SLUG;\n  cy.log('# Navigate to article:');\n  cy.visit(Cypress.config().baseUrl + ARTICLE_SLUG);\n  cy.log(' ');\n  cy.log('# Verify current URL display the article that queried from the GraphQL');\n  cy.url().should('be.equal', Cypress.config().baseUrl + ARTICLE_SLUG);\n  cy.log(' ');\n  cy.log('# Verify Header Section');\n  cy.xpath(HEADER_SECTION, {\n    timeout: 10000\n  }).children().then(function ($elemt) {\n    cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{postCollection(where:{slug:\"' + POST_SLUG + '\"}){items{mainCategory{slug},title,authorsCollection{items{name}},featuredImage{url}}}}').then(function (response) {\n      var head_response = response.body.data.postCollection.items[0]; //Compare title and Author name with the data in GraphQL\n      cy.log(' ');\n      cy.log('# Verify title of the article and author name between frontend and GraphQL');\n      cy.wrap($elemt).should('contain', head_response.title).and('contain', head_response.authorsCollection.items[0].name); //Compare image url in the element with the graphQL\n      cy.log(' ');\n      cy.log('# Verify Feature Image between frontend and GraphQL');\n      var image_url = ('' + head_response.featuredImage.url).split('https:');\n      cy.wrap($elemt[3].innerHTML).should('contain', image_url[1]); //Compare category on the href of bread crump\n      cy.log(' ');\n      cy.log('# Verify Bread Crump displays Main Category');\n      cy.wrap($elemt[0].baseURI).should('contain', head_response.mainCategory.slug); //Verify bread crump is aligned at center\n      cy.log(' ');\n      cy.log('# Verify bread crump is aligned center');\n      cy.xpath(BREAD_CRUMP, {\n        timeout: 6000\n      }).invoke('css', 'text-align').should('eq', 'center'); //Verify bread crump is navigated to the same category\n      cy.log(' ');\n      cy.log('# Verify bread crump is navigated to correct Category');\n      cy.xpath(BREAD_CRUMP, {\n        timeout: 6000\n      }).find('a').eq(0).invoke('text').then(function (categoryname) {\n        cy.xpath(BREAD_CRUMP, {\n          timeout: 6000\n        }).find('a').eq(0).click();\n        cy.get('h1', {\n          timeout: 6000\n        }).invoke('text').should('eq', categoryname).go('back');\n      }); //Verify Title is aligned at center\n      cy.log(' ');\n      cy.log('# Verify title of the article is aligned center');\n      cy.xpath(POST_TITLE, {\n        timeout: 6000\n      }).invoke('css', 'text-align').should('eq', 'center'); //Verify PublishDate and Author section\n      cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{postCollection(limit:1,where:{slug:\"' + POST_SLUG + '\"}){items{publishDate,authorsCollection{items{name,image{url}}}}}}').then(function (response) {\n        var AUTHOR_QL = response.body.data.postCollection.items[0].authorsCollection.items[0];\n        var POST_PUB_DATE = response.body.data.postCollection.items[0].publishDate;\n        cy.log(' ');\n        cy.log(POST_PUB_DATE.slice(-13, -11));\n        cy.log('#Verify the Author image');\n        if (AUTHOR_QL.image === null) {\n          cy.xpath(AUTHOR_IMG).invoke('attr', 'src').should('contain', 'icon-author-placeholder');\n        } else {// cy.xpath(AUTHOR_IMG)\n          //   .invoke('attr', 'src')\n          //   .should('contain', AUTHOR_QL.image.url)\n        }\n        cy.log(' ');\n        cy.log('#Verify the author name between frontend and GraphQL to match');\n        cy.xpath(HEADER_SECTION).find('a[href*=\"/author/\"]').invoke('text').should('contains', AUTHOR_QL.name);\n        cy.log(' ');\n        cy.log('#Verify the publish Date between frontend and GraphQL to match');\n        cy.xpath(PUBLISHDATE).invoke('text').then(function (publishdateone) {\n          publishdatetwo = publishdateone; //Convert object from graphQL to String then, get only the date\n          if (POST_PUB_DATE.slice(-13, -11) > 17) {\n            cy.log('more than 17'); //Change date format from MMM DD, YYYY to YYYY-MM-DD\n            var publish_from_frontend = formatDate_reduct_date(publishdateone.slice(-12));\n            cy.log(publishdateone.slice(-12));\n            var publish_from_graphQL = JSON.stringify(POST_PUB_DATE).slice(1, 11);\n            cy.wrap(publish_from_graphQL).should('eq', publish_from_frontend);\n          } else {\n            cy.log('less than 17'); //Change date format from MMM DD, YYYY to YYYY-MM-DD\n            var _publish_from_frontend = formatDate(publishdateone.slice(-12));\n            cy.log(publishdateone.slice(-12)); //Convert object from graphQL to String then, get only the date\n            var _publish_from_graphQL = JSON.stringify(POST_PUB_DATE).slice(1, 11);\n            cy.wrap(_publish_from_graphQL).should('eq', _publish_from_frontend);\n          }\n        });\n        cy.log(' ');\n        cy.log('# Check the author is linked to the correct page after it is clicked');\n        cy.xpath(HEADER_SECTION).find('a[href*=\"/author/\"] > div').click();\n        cy.get('h1', {\n          timeout: 6000\n        }).eq(0).invoke('text').should('eq', AUTHOR_QL.name);\n        cy.url().should('include', '/author/').go('back'); // check tag exist or not\n        var existent = Cypress.$('#root > div > div > div > article > div > div > footer > div > div > span');\n        if (existent.length) {\n          //If it found the element it will be here\n          cy.log('found');\n          cy.log(' ');\n          cy.log('# Check tag section');\n          cy.xpath(TAG_SECTION).scrollIntoView().find('span').eq(0).invoke('text').then(function (tagname) {\n            cy.xpath(TAG_SECTION).find('span').eq(0).click();\n            cy.log(' ');\n            cy.log('# Check that tag is navigated to the correct page with the same tag name');\n            cy.get('h1', {\n              timeout: 8000\n            }).eq(0).invoke('text').should('eq', tagname); //Have encoded the tag before comparing with the current url\n            cy.url().should('eq', Cypress.config().baseUrl + '/tag/' + encodeURIComponent(tagname)); // let UTCDate = new Date().toISOString()\n            cy.log(' ');\n            cy.log('# Verify article is existed in Tag Index page');\n            cy.get('article').find('a[href*=\"' + ARTICLE_SLUG + '\"]') //This parents is div tag under the <article>S\n            .parents(ARTICLE_ON_TAG_PAGE).then(function (parent) {\n              cy.wrap(parent);\n              cy.log(' ');\n              cy.log('# Check that the title and publish date is the same as Article Page');\n              cy.wrap(parent).should('contain', head_response.title).and('contain', publishdatetwo);\n              cy.log(' ');\n              cy.log('# Check that the image is the same as Featured image in Article Page');\n              cy.wrap(parent).find('img').invoke('attr', 'src').should('contain', image_url[1]).go('back');\n            }); // cy.log(' ')\n            // cy.log('# Verify Trending Stoties section is appearing 4 articles')\n            // cy.scrollTo('bottom')\n            // cy.contains('MOST POPULAR', {\n            //   timeout: 7000,\n            // }).scrollIntoView()\n            // cy.xpath(ARTICLE_IN_TRENDING)\n            //   .its('length')\n            //   .should('eq', 4)\n          });\n        }\n      });\n    });\n  });\n});",
+              "err": {},
+              "uuid": "1075f0d1-e064-4e6a-9885-7f0204d2f4d4",
+              "parentUUID": "2b5d9395-46e2-468c-a995-fd54362b52ed",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "1075f0d1-e064-4e6a-9885-7f0204d2f4d4"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 25728,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T07:04:35.250Z",
+    "end": "2020-09-22T07:04:59.985Z",
+    "duration": 24735,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "0e183c1a-dcae-449c-bb1b-dbe65d53b012",
+      "title": "",
+      "fullFile": "cypress/integration/M_01_Homepage.js",
+      "file": "cypress/integration/M_01_Homepage.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "ec06107d-6008-41ee-ade1-8259f0cbc3d2",
+          "title": "MOMCOM_M_01_Homepage",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify MOM.COM site is accesible including its logo and main module",
+              "fullTitle": "MOMCOM_M_01_Homepage Verify MOM.COM site is accesible including its logo and main module",
+              "timedOut": null,
+              "duration": 24194,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_GETTING_PREGNANT_LINK = '//nav[1]//a[@href=\"/getting-pregnant\"]';\nvar XPATH_LOGO_IMG = '//img[@src=\"/static/media/logo-momcom.faee38e5.svg\"]';\nvar XPATH_LOGO_LINK = '(//nav//a)[1]';\nvar XPATH_FEATURED_POST_IMG_LINK = '//div/div[1]/div[2]/div[1]/div/div[1]/div[1]/div/div/div[1]/a';\nvar XPATH_PARENT_TOPIC = '//a[normalize-space()=\"PARENTING\"]';\nvar XPATH_HAPPY_TOPIC = '//a[normalize-space()=\"HAPPY, KIND, AND CONFIDENT\"]';\nvar XPATH_HAMBURGER_BUTTON = '(//button)[1]'; // Declare an array for testing steps #2 to #4 loop\nvar XPATH_ARRAY = [XPATH_GETTING_PREGNANT_LINK, XPATH_FEATURED_POST_IMG_LINK, XPATH_PARENT_TOPIC]; // Declare an array for testing steps logs\nvar LOG_ARRAY = ['Getting Pregnant', 'Featured post', 'Parenting topic '];\nvar tagNameEncode;\ncy.log('click on the hamburger menu');\ncy.xpath(XPATH_HAMBURGER_BUTTON).click(); // Loop for testing step #2 to #4\nvar _loop = function _loop(i) {\n  cy.log('#' + (i + 2) + ' Click on ' + LOG_ARRAY[i] + ' and verify URL'); // Get URL of element and click on it\n  cy.xpath(XPATH_ARRAY[i]).focus().invoke('attr', 'href').then(function (hrefValue) {\n    cy.log(LOG_ARRAY[i] + ' URL >>> ', hrefValue);\n    cy.xpath(XPATH_ARRAY[i]).click();\n    cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n  }).then(function () {\n    cy.log('wait for email subscription modal loading');\n    cy.get('div', {\n      timeout: 7000\n    }).then(function ($div) {\n      // If there is email subscription modal, it should be closed. We do not need to verify it.\n      if ($div.hasClass('pf-widget-content')) {\n        cy.xpath('//button[@value=\"Cancel\"]').click({\n          force: true\n        });\n      }\n    });\n  }); // Click mom.com logo\n  cy.log('click on mom.com logo and back to homepage');\n  cy.xpath(XPATH_LOGO_IMG).should('be.visible');\n  cy.xpath(XPATH_LOGO_LINK).click();\n  cy.url().should('eq', Cypress.config().baseUrl + '/');\n};\nfor (var i = 0; i < XPATH_ARRAY.length; i++) {\n  _loop(i);\n} // Click on Happy, Kind, and Confident topic\n\ncy.log('wait for email subscription modal loading');\ncy.get('div', {\n  timeout: 7000\n}).then(function ($div) {\n  // If there is email subscription modal, it should be closed. We do not need to verify it.\n  if ($div.hasClass('pf-widget-content')) {\n    cy.xpath('//button[@value=\"Cancel\"]').click({\n      force: true\n    });\n  }\n});\ncy.log('#5 Click on Happy, Kind, and Confident topic and verify URL');\ncy.xpath(XPATH_HAPPY_TOPIC).focus().invoke('attr', 'href').then(function (hrefValue) {\n  cy.log('Happy, Kind, and Confident URL >>> ', hrefValue);\n  cy.xpath(XPATH_HAPPY_TOPIC).click();\n  hrefValue = hrefValue.split('/tag/');\n  tagNameEncode = encodeURIComponent(hrefValue[1].trim());\n  cy.url().should('eq', Cypress.config().baseUrl + '/tag/' + tagNameEncode);\n}); // Back to homepage\ncy.log('back to homepage');\ncy.go('back').then(function () {\n  // Need to reload because the URL is not changed from previous URL\n  cy.reload();\n  cy.url().should('eq', Cypress.config().baseUrl + '/');\n});\ncy.log('#6 Click on mom.com logo in homepage and verify URL should not be changed');\ncy.xpath(XPATH_LOGO_IMG).should('be.visible');\ncy.xpath(XPATH_LOGO_LINK).click();\ncy.url().should('eq', Cypress.config().baseUrl + '/');",
+              "err": {},
+              "uuid": "beb9452a-4c60-4a25-a05d-5910a10bcf34",
+              "parentUUID": "ec06107d-6008-41ee-ade1-8259f0cbc3d2",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "beb9452a-4c60-4a25-a05d-5910a10bcf34"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 24194,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

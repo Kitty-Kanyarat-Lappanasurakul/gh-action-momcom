@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T07:00:01.936Z",
+    "end": "2020-09-22T07:00:29.522Z",
+    "duration": 27586,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "e344b29d-d639-45df-adae-e3fe92c5ecf3",
+      "title": "",
+      "fullFile": "cypress/integration/D_10_User_Access_Site.js",
+      "file": "cypress/integration/D_10_User_Access_Site.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "33473ac4-5273-4334-a765-89800eb8b1c2",
+          "title": "MOMCOM_D_10_User_Access_Site",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify the user is able to access to the site properly",
+              "fullTitle": "MOMCOM_D_10_User_Access_Site Verify the user is able to access to the site properly",
+              "timedOut": null,
+              "duration": 27375,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var KEYWORD = 'spaceship';\nvar CSS_SEARCH_ICON = 'button[class*=\"sharedStyles__ScIconButton\"]';\nvar CSS_SEARCH_INPUT = 'input[class*=\"NavbarDesktop__ScForwardRefSearchBox\"]';\nvar XPATH_LOGO_IMG = '//img[@src=\"/static/media/logo-momcom.faee38e5.svg\"]';\nvar XPATH_LOGO_LINK = '(//nav//a)[1]';\nvar XPATH_FIRST_ARTICLE_LINK = '(//article[1]//a)[1]';\nvar XPATH_RECOMMENDED_SECTION_LINK = '(//aside//a)[1]';\nvar XPATH_AUTHOR_IMG_LINK = '(//a[contains(@href,\"author\")])[1]'; // Declare an array for testing steps #3 to #5 loop\nvar XPATH_ARRAY = [XPATH_FIRST_ARTICLE_LINK, XPATH_RECOMMENDED_SECTION_LINK, XPATH_AUTHOR_IMG_LINK]; // Click search icon #2\ncy.get(CSS_SEARCH_ICON).click(); // Verify search box appear with \"Search\" text and type keyword #2\ncy.log('#2 Verify search box appear with \"Search\" text and type keyword');\ncy.get(CSS_SEARCH_INPUT).invoke('attr', 'placeholder').should('eq', 'Search'); // Type keyword in search box\ncy.get(CSS_SEARCH_INPUT).type(KEYWORD); // Click search #2\ncy.get(CSS_SEARCH_ICON).click(); // Assert search result page url #2\ncy.log('#2 Verify URL of Search results page');\ncy.url().should('eq', Cypress.config().baseUrl + '/search/' + KEYWORD); // Declare an array for testing steps logs\nvar LOG_ARRAY = ['The 1st article of search page', 'Recommended section', 'Author image']; // Loop for testing step #3 to #5\nvar _loop = function _loop(i) {\n  cy.log('#' + (i + 3) + ' Click on ' + LOG_ARRAY[i] + ' and verify URL');\n  cy.wait(3000).window().scrollTo('bottom'); // Get URL of element and click on it\n  cy.wait(2000).xpath(XPATH_ARRAY[i]).focus().invoke('attr', 'href').then(function (hrefValue) {\n    cy.log(LOG_ARRAY[i] + ' URL >>> ', hrefValue); // Reload before clicking on the recommended section.\n    if (i == 1) {\n      cy.reload();\n    }\n    cy.xpath(XPATH_ARRAY[i]).click({\n      force: true\n    });\n    cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n  });\n};\nfor (var i = 0; i < XPATH_ARRAY.length; i++) {\n  _loop(i);\n}\ncy.log('#6 Click on VIEW ALL CONTRIBUTORS link and verify URL');\ncy.wait(2000).get('a').contains('VIEW ALL CONTRIBUTORS').invoke('attr', 'href').then(function (hrefValue) {\n  cy.log(' URL >>> ', hrefValue);\n  cy.get('a').contains('VIEW ALL CONTRIBUTORS').click({\n    force: true\n  });\n  cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n}); // Need to skip step #7 from the test script because the Navigation bar is hidden occasionally. If we do not skip this step, the test script will not be stable.\n// cy.log('#7 Click on mom.com logo and verify URL of homepage')\n// cy.xpath(XPATH_LOGO_IMG, { timeout: 3000 }).should('be.visible')\n// cy.xpath(XPATH_LOGO_LINK).click({ force: true })\n// cy.url().should('eq', Cypress.config().baseUrl + '/')",
+              "err": {},
+              "uuid": "33e76972-a416-49e2-82e5-f1ecf4a0f1f6",
+              "parentUUID": "33473ac4-5273-4334-a765-89800eb8b1c2",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "33e76972-a416-49e2-82e5-f1ecf4a0f1f6"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 27375,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

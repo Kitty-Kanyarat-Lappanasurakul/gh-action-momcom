@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T07:02:02.554Z",
+    "end": "2020-09-22T07:02:33.130Z",
+    "duration": 30576,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "b38616a6-6cd2-484a-ba27-012f02e621da",
+      "title": "",
+      "fullFile": "cypress/integration/D_14_Tag_Index_Page.js",
+      "file": "cypress/integration/D_14_Tag_Index_Page.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "bc41707c-78b4-430b-977c-34937b101896",
+          "title": "MOMCOM_D_14_Tag_Index_Page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify tag index page working properly",
+              "fullTitle": "MOMCOM_D_14_Tag_Index_Page Verify tag index page working properly",
+              "timedOut": null,
+              "duration": 29776,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_TAG_LINK = '(//a[contains(@href,\"/tag/\")])[1]';\nvar XPATH_TAG_LINKS = '//a[contains(@href,\"/tag/\")]';\nvar XPATH_LINE_TAG_PAGE = '//img[contains(@src,\"/static/media/line-pink\")]';\nvar XPATH_ARTICLE_LINK = '//article/div/div/div/a';\nvar XPATH_FIRST_ARTICLE_LINK = '(//article/div/div/div/a)[1]';\nvar XPATH_FB_SHARE_BUTTON = '(//footer//button)[1]'; // To store article URLs in search result page\nvar articleLinkArray = []; // To store duplicate articles in search result page\nvar findDuplicatesArray = [];\nvar tagName;\nvar tagNameEncode;\nvar totalPostTagPage;\nvar requestDate = new Date().toISOString();\ncy.log('Verify URL of article');\ncy.visit(Cypress.config().baseUrl + articleURL);\ncy.url().should('eq', Cypress.config().baseUrl + articleURL); // Scroll to see the tag\ncy.log('#2 Scroll down to the tag keyword');\ncy.xpath(XPATH_TAG_LINK).scrollIntoView().should('be.visible'); // Get the tags in the post\ncy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{postCollection(where:{slug:' + articleRequestURL + '}){items{tags}}}').then(function (response) {\n  cy.log(response.body.data.postCollection.items[0].tags[0]);\n  tagName = response.body.data.postCollection.items[0].tags[0];\n  cy.log('-Verify the tag name displays in the article correctly');\n  cy.xpath(XPATH_TAG_LINK).invoke('text').should('eq', tagName);\n  tagNameEncode = encodeURIComponent(tagName.trim());\n  cy.log('Click on the tag name in the article page');\n  cy.xpath(XPATH_TAG_LINK).click();\n  cy.log('-Verify URL appear https://mom.com/tag/[tag keyword]');\n  cy.url().should('eq', Cypress.config().baseUrl + '/tag/' + tagNameEncode);\n  cy.log('-Tag keyword appear at top left of the page with underline.');\n  cy.wait(3000).get('h1').contains(tagName).should('be.visible');\n  cy.xpath(XPATH_LINE_TAG_PAGE).should('be.visible');\n  cy.request('https://mom.com/api/spaces/9l3tjzgyn9gr/environments/master/entries?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&content_type=post&include=1&fields.tags=' + tagNameEncode + '&fields.publishDate[lte]=' + requestDate).then(function (response) {\n    totalPostTagPage = response.body.total;\n    cy.log('-Verify the first load articles in the tag page');\n    if (totalPostTagPage < 10) {\n      cy.get('article').should('have.length', totalPostTagPage);\n      cy.log('-Skip step #3 because the article totals less than 10');\n    } else {\n      cy.get('article').should('have.length', 10);\n      cy.log('#3 Scroll down to see more articles load');\n      cy.window().scrollTo('bottom').wait(6000);\n      cy.get('div').then(function ($div) {\n        // If there is you might like modal, it should be closed. We do not need to verify it.\n        if ($div.hasClass('pf-widget-content')) {\n          cy.xpath('//button[@class=\"pf-widget-close\"]').click({\n            force: true\n          });\n        }\n      }); // Count <article> after load more\n      cy.wait(3000).get('article').its('length').then(function (count) {\n        // Verify when load more, <article> should less than or equal to 20\n        cy.log('Verify <article> count after load more: ', count);\n        cy.wrap(count).should('eq', 20);\n      });\n    }\n  });\n}); // .then(() => {\n// Get the total posts in the tag\n// })\n// .then(() => {\ncy.xpath(XPATH_ARTICLE_LINK).each(function ($el, index) {\n  cy.wrap($el).invoke('attr', 'href').then(function (hrefValue) {\n    // hrefValue is article URL and it will be stored to articleLinkArray[]\n    articleLinkArray[index] = hrefValue;\n    cy.log('Article URL [' + index + '] >>> ', articleLinkArray[index]);\n  });\n}) // })\n.then(function () {\n  // Declare function for finding duplicated article\n  var findDuplicates = function findDuplicates(arr) {\n    return arr.filter(function (item, index) {\n      return arr.indexOf(item) != index;\n    });\n  }; // Verify duplicate article\n\n  cy.log('URL Array lenght:', articleLinkArray.length);\n  cy.log('-Verify duplicate article');\n  cy.log('>>>>>>>' + articleLinkArray);\n  findDuplicatesArray = findDuplicates(articleLinkArray);\n  cy.wrap(findDuplicatesArray).should('be.empty');\n  cy.log('#4 Click the 1st article in the tag page');\n  cy.xpath(XPATH_FIRST_ARTICLE_LINK).click(); // Scroll to see the tag\n  cy.xpath(XPATH_FB_SHARE_BUTTON).scrollIntoView().should('be.visible');\n  cy.log('-Verify the tag displays in this article');\n  cy.xpath(XPATH_TAG_LINKS).contains(tagName).should('be.visible');\n});",
+              "err": {},
+              "uuid": "87ebc052-f1a6-4687-ac85-9d713d11c4c0",
+              "parentUUID": "bc41707c-78b4-430b-977c-34937b101896",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "87ebc052-f1a6-4687-ac85-9d713d11c4c0"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 29776,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

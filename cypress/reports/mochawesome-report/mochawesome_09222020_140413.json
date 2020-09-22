@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T07:03:09.133Z",
+    "end": "2020-09-22T07:04:13.751Z",
+    "duration": 64618,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "ae3c4e01-d747-4cf9-8f05-2befe724f2f4",
+      "title": "",
+      "fullFile": "cypress/integration/D_16_Contact_Page.js",
+      "file": "cypress/integration/D_16_Contact_Page.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "81ca3115-adc5-4076-934f-bacb9898a181",
+          "title": "MOMCOM_D_16_Contact_Page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify the contact page",
+              "fullTitle": "MOMCOM_D_16_Contact_Page Verify the contact page",
+              "timedOut": null,
+              "duration": 64418,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.log('# Navigate to Contact page from Homepage');\ncy.window().scrollTo('bottom');\ncy.xpath(XPATH_FOOTER_CONTACT).invoke('attr', 'href').then(function (href) {\n  cy.xpath(XPATH_FOOTER_CONTACT).click();\n  cy.url().should('eq', Cypress.config().baseUrl + href);\n  cy.get('h1').invoke('text').should('eq', 'Contact Us');\n});\ncy.log('# Verify the Select a contact field');\ncy.xpath(SELECT_A_CONTACT + '/ option').each(function ($li, index) {\n  cy.wrap($li).invoke('text').then(function (text) {\n    cy.wrap(text).should('eq', CONTACT_LIST[index]);\n    cy.wrap($li).invoke('attr', 'value').then(function (value) {\n      cy.window().scrollTo('top');\n      cy.xpath(SELECT_A_CONTACT).select(text).should('have.value', value);\n    });\n  });\n});\ncy.log('# Verify HELP Text under the Subject field');\ncy.xpath(SUBJECT_FIELD).click({\n  force: true\n});\ncy.get('h1').click();\ncy.xpath(SUBJECT_FIELD).parent().find('div').invoke('text').should('eq', 'Please include a subject.'); //EMAIL FIELD\ncy.log('# Verify HELP Text under the E-mail field');\ncy.xpath(EMAIL_FIELD).click({\n  force: true\n});\ncy.get('h1').click();\ncy.xpath(EMAIL_FIELD).parent().find('div').invoke('text').should('eq', 'Please enter a valid e-mail address.');\ncy.log('# Verify enter INVALID email in the email field');\ncy.xpath(EMAIL_FIELD).click({\n  force: true\n}).type(randomString);\ncy.get('div', {\n  timeout: 7000\n}).then(function ($div) {\n  // If there is consent pop then, it will click on GOT IT!\n  if ($div.hasClass('pf-widget-container')) {\n    cy.get('button[value=\"Cancel\"]').click();\n  }\n});\ncy.wait(1000);\ncy.xpath(EMAIL_FIELD).parent().find('div').invoke('text').should('eq', 'Please enter a valid e-mail address.'); //Phone Field\ncy.log('# Verify enter string on Phone field');\ncy.xpath(PHONE_FIELD).click({\n  force: true\n}).type(randomString);\ncy.xpath(PHONE_FIELD).invoke('attr', 'value').should('be.empty'); //Comment field\ncy.log('# Verify Help Text under Comments field');\ncy.xpath(COMMENT_SECTION).click({\n  force: true\n});\ncy.get('h1').click();\ncy.xpath(COMMENT_SECTION).parent().find('div').invoke('text').should('eq', 'Please enter your comments or questions.');\ncy.log('# Verify that it should not allow to submit if required field still remain');\ncy.log('# Leave Subject field as blank');\ncy.reload();\ncy.xpath(SUBJECT_FIELD).click({\n  force: true\n});\ncy.get('h1').click();\ncy.VALID_NAME();\ncy.VALID_EMAIL();\ncy.VALID_COMMENTS();\ncy.xpath(SUBMIT_BUTTON).should('be.disabled');\ncy.log('# Leave Email field as blank');\ncy.reload();\ncy.VALID_SUBJECT();\ncy.VALID_NAME();\ncy.xpath(EMAIL_FIELD).click({\n  force: true\n});\ncy.get('h1').click();\ncy.VALID_COMMENTS();\ncy.xpath(SUBMIT_BUTTON).should('be.disabled');\ncy.log('# Leave Comments field as blank');\ncy.reload();\ncy.VALID_SUBJECT();\ncy.VALID_NAME();\ncy.VALID_EMAIL();\ncy.xpath(COMMENT_SECTION).click({\n  force: true\n});\ncy.get('h1').click();\ncy.xpath(SUBMIT_BUTTON).should('be.disabled');\ncy.log('# Valid case with all fields are input');\ncy.reload();\ncy.VALID_SUBJECT();\ncy.VALID_NAME();\ncy.VALID_EMAIL();\ncy.VALID_PHONE_NUMBER();\ncy.VALID_COMMENTS();\ncy.xpath(SUBMIT_BUTTON).should('be.enabled').click({\n  force: true\n});\ncy.get('h2[class*=\"ContactUsSubmitResult__ScThankyouHeader\"]').invoke('text').should('equal', 'Thanks for reaching out!');\ncy.get('p[class*=\"ContactUsSubmitResult__ScThankyouContent\"]').invoke('text').should('eq', \"Your message has been successfully submitted. We'll review your email and get back to you shortly.\");",
+              "err": {},
+              "uuid": "cdddabf1-dbb6-4737-bc7e-d10b8e0962e4",
+              "parentUUID": "81ca3115-adc5-4076-934f-bacb9898a181",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "cdddabf1-dbb6-4737-bc7e-d10b8e0962e4"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 64418,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:59:39.976Z",
+    "end": "2020-09-22T06:59:58.295Z",
+    "duration": 18319,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "39d55d09-b618-4bfb-a046-37cbf95a7750",
+      "title": "",
+      "fullFile": "cypress/integration/D_09_Article_Series.js",
+      "file": "cypress/integration/D_09_Article_Series.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "0cd35531-da18-496e-beda-fb5ad9bebc4e",
+          "title": "MOMCOM_D_09_Article_Series",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify series article page working properly",
+              "fullTitle": "MOMCOM_D_09_Article_Series Verify series article page working properly",
+              "timedOut": null,
+              "duration": 18052,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_LOGO_IN_ARTICLE = '//article/div[1]/div/img';\nvar XPATH_SERIES_ARTICLE_01_IMG = '(//article)[2]//img';\nvar XPATH_SERIES_ARTICLE_01_TITLE = '(//article)[2]//h3';\nvar XPATH_SERIES_ARTICLE_01_LINK = '((//article)[2]//a)[1]';\nvar XPATH_SERIES_ARTICLE_02_IMG = '(//article)[3]//img';\nvar XPATH_SERIES_ARTICLE_02_TITLE = '(//article)[3]//h3';\nvar XPATH_SERIES_ARTICLE_02_LINK = '((//article)[3]//a)[1]'; // const XPATH_SEE_SERIES_BUTTON = '(//a[contains(@href,\"/series/\")])[last()]'\nvar XPATH_LOGO_SERIES_PAGE = '(//img)[14]';\nvar seriesLink01 = [];\nvar seriesLink02 = [];\nvar logoChecking = 0; // Declare to store the series of recent article tab in browser\nvar seriesPost; // These variable values will be changed every loop\nvar requestURL = [];\nvar seriesTitle;\nvar seriesSlug;\nvar seriesSponsoredBy;\nvar logoURLCheck;\nvar logoURL;\nvar seriesTitleToStr;\nvar seriesTitleToUpperCase;\nvar seriesSlugToStr;\ncy.log('-Verify URL of series article');\ncy.visit(Cypress.config().baseUrl + ARTICLE_URL);\ncy.url().should('eq', Cypress.config().baseUrl + ARTICLE_URL);\ncy.log('-Verify Title is centered at the top of the page under the Category');\ncy.get('h1').eq(0).should('be.visible');\nvar _loop = function _loop(i) {\n  // Get the logo URL of Sponsor(series)\n  cy.wrap(requestURL).then(function () {\n    if (i === 0) {\n      requestURL[0] = ARTICLE_REQUEST_URL;\n    }\n    cy.log('Request for: ' + requestURL[i]); // Get the series details of article\n    cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{postCollection(where:{slug:\"' + requestURL[i] + '\"}){items{series{title,slug,sponsoredBy,sponsorLogo{url}}}}}').then(function (response) {\n      logoURLCheck = response.body.data.postCollection.items[0].series.sponsorLogo;\n      seriesSponsoredBy = response.body.data.postCollection.items[0].series.sponsoredBy;\n      cy.log('(sponsoredBy:) ', seriesSponsoredBy);\n      seriesTitle = response.body.data.postCollection.items[0].series.title;\n      cy.log('(seriesTitle:)', seriesTitle);\n      seriesSlug = response.body.data.postCollection.items[0].series.slug;\n      cy.log('(seriesSlug:)', seriesSlug); // Convert seriesTitle to String\n      seriesTitleToStr = JSON.stringify(seriesTitle).split('\"'); // Convert seriesSlug to String\n      seriesSlugToStr = JSON.stringify(seriesSlug).split('\"'); // i=0: Step #2 check logo and #3 check the 1st article of More from sereis section\n      if (i === 0) {\n        // To store the series of recent article tab in browser\n        seriesPost = seriesSlug; // If there are both of Sponsor Logo and SponsoredBy in series, \"In Partnership with\" and logo will display\n        if (logoURLCheck != null && seriesSponsoredBy != null) {\n          logoURL = response.body.data.postCollection.items[0].series.sponsorLogo.url;\n          cy.log('#2 Scroll down to the In Partnership');\n          cy.get('span').contains('In Partnership with').scrollIntoView().should('be.visible');\n          cy.xpath(XPATH_LOGO_IN_ARTICLE).invoke('attr', 'src').then(function (srcValue) {\n            cy.log(' Logo URL >>> ', srcValue);\n            cy.log('-Verify URL of Sponsor logo in the article page');\n            cy.wrap(srcValue).should('eq', logoURL);\n          });\n          cy.log('-Verify Sponsor logo appear beside the In Partnership text');\n          cy.xpath(XPATH_LOGO_IN_ARTICLE).should('be.visible'); // If logoChecking = 1, we will verify logo in the series page (see step #4)\n          logoChecking = 1;\n        } // Show warning when Test URL does NOT contain Sponsor logo and SponsoredBy\n\n        if (seriesSponsoredBy === null || logoURLCheck === null) {\n          cy.log('___*Warning!:* Test URL does NOT contain Sponsor logo and SponsoredBy.___');\n          cy.log('___And skip Step #2 Scroll down to the In Partnership.___');\n        }\n        cy.log('#3 Scroll down to More from this series: section');\n        cy.get('p').contains('More from this series:').scrollIntoView().should('be.visible').then(function () {\n          cy.log('wait for email subscription modal loading');\n          cy.get('div', {\n            timeout: 7000\n          }).then(function ($div) {\n            // If there is email subscription modal, it should be closed. We do not need to verify it.\n            if ($div.hasClass('pf-widget-content')) {\n              cy.xpath('//button[@value=\"Cancel\"]').click({\n                force: true\n              });\n            }\n          });\n        }); // Convert seriesTitle to UpperCase\n        seriesTitleToUpperCase = seriesTitleToStr[1].toUpperCase();\n        cy.log('-Verify the series name displays under More from this series text');\n        cy.contains(seriesTitleToUpperCase).should('be.visible');\n        cy.xpath(XPATH_SERIES_ARTICLE_01_LINK).invoke('attr', 'href').then(function (hrefValue) {\n          seriesLink01 = hrefValue.split('/');\n          cy.log('The __1st article__ of More from sereis: ' + seriesLink01[2]);\n          requestURL.push(seriesLink01[2]);\n        });\n        cy.log('-Verify the feature image and title of series article appear properly');\n        cy.xpath(XPATH_SERIES_ARTICLE_01_IMG).should('be.visible');\n        cy.xpath(XPATH_SERIES_ARTICLE_01_TITLE).should('be.visible');\n      } // i=1: Step #3 check the 1st article of More from sereis section is the same series as this article and check the 2nd article of More from sereis section\n\n      if (i === 1) {\n        cy.log('-Verify __1st article__ is the same series as this article');\n        cy.wrap(seriesSlug).should('eq', seriesPost);\n        cy.xpath(XPATH_SERIES_ARTICLE_02_LINK).invoke('attr', 'href').then(function (hrefValue) {\n          seriesLink02 = hrefValue.split('/');\n          cy.log('The __2nd article__ of More from sereis: ' + seriesLink02[2]);\n          requestURL.push(seriesLink02[2]);\n        });\n        cy.log('-Verify the feature image and title of series article appear properly');\n        cy.xpath(XPATH_SERIES_ARTICLE_02_IMG).should('be.visible');\n        cy.xpath(XPATH_SERIES_ARTICLE_02_TITLE).should('be.visible');\n      } // i=1: Step #3 check the 2nd article of More from sereis section is the same series as this article and #4 Click SEE THIS SERIES > button\n\n      if (i === 2) {\n        cy.log('-Verify __2nd article__ is the same series as this article');\n        cy.wrap(seriesSlug).should('eq', seriesPost);\n        cy.log('-Verify there is SEE THIS SERIES button in DOM');\n        cy.get('div').contains('SEE THIS SERIES').should('exist');\n        var XPATH_SEE_SERIES_BUTTON = '(//footer//a[@href=\"/series/' + seriesSlug + '\"])[2]';\n        cy.xpath(XPATH_SEE_SERIES_BUTTON).invoke('attr', 'href').then(function (hrefValue) {\n          cy.log(' URL >>> ', hrefValue);\n          cy.log('-Verify URL of series in SEE THIS SERIES button');\n          cy.wrap(hrefValue).should('eq', '/series/' + seriesSlugToStr[1]);\n          cy.log('#4 Click on SEE THIS SERIES button');\n          cy.xpath(XPATH_SEE_SERIES_BUTTON).click({\n            force: true\n          });\n          cy.log('-Verify URL of series page');\n          cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n        }).then(function () {\n          // If logoChecking = 1, we will verify logo in the series page\n          if (logoChecking === 1) {\n            cy.wait(3000).xpath(XPATH_LOGO_SERIES_PAGE).invoke('attr', 'src').then(function (srcValue) {\n              cy.log(' Logo URL >>> ', srcValue);\n              cy.log('-Verify the sponsor logo of the series appear the same as the previous series article');\n              cy.wrap(srcValue).should('eq', logoURL);\n            });\n          }\n        });\n      }\n    });\n  });\n};\nfor (var i = 0; i < 3; i++) {\n  _loop(i);\n}",
+              "err": {},
+              "uuid": "32d7f2a8-cdb5-4ea9-b50c-680a1e97bc4e",
+              "parentUUID": "0cd35531-da18-496e-beda-fb5ad9bebc4e",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "32d7f2a8-cdb5-4ea9-b50c-680a1e97bc4e"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 18052,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

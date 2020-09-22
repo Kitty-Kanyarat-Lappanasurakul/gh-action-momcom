@@ -1,0 +1,109 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2020-09-22T07:02:37.943Z",
+    "end": "2020-09-22T07:03:02.464Z",
+    "duration": 24521,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "606332c7-4eb2-4a21-85ed-136142709dd8",
+      "title": "",
+      "fullFile": "cypress/integration/D_15_Footer_Links.js",
+      "file": "cypress/integration/D_15_Footer_Links.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "e218c23b-d69b-4ef8-aaaf-c15f30f109fc",
+          "title": "MOMCOM_D_15_Footer_Links",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify All company related links on the Footer",
+              "fullTitle": "MOMCOM_D_15_Footer_Links Verify All company related links on the Footer",
+              "timedOut": null,
+              "duration": 24332,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "\"assets/D_15_Footer_Links.js/MOMCOM_D_15_Footer_Links -- Verify All company related links on the Footer (failed).png\"",
+              "code": "var XPATH_FOOTER_ABOUT = '//a[@href=\"/about\"]';\nvar XPATH_FOOTER_TERMS = '//a[@href=\"https://www.wildskymedia.com/terms-of-service/\"]';\nvar XPATH_FOOTER_PRIVACY = '//a[@href=\"https://www.wildskymedia.com/privacy-policy/\"]';\nvar XPATH_FOOTER_CONTACT = '//a[@href=\"/contact\"]';\nvar XPATH_FOOTER_ADVERTISING = '//a[@href=\"mailto:sales@wildskymedia.com\"]';\nvar XPATH_FOOTER_MOMCOM = '//a[@href=\"https://mom.com\"]';\nvar XPATH_FOOTER_CAFEMOM = '//a[@href=\"https://www.cafemom.com/\"]';\nvar XPATH_FOOTER_ML = '//a[@href=\"https://www.mamaslatinas.com/\"]';\nvar XPATH_FOOTER_BABYNAME = '//a[@href=\"http://www.babynamewizard.com/\"]';\nvar XPATH_FOOTER_LT = '//a[@href=\"https://www.littlethings.com/\"]';\nvar XPATH_FOOTER_REVELIST = '//a[@href=\"https://www.revelist.com/\"]';\nvar LINKS_ARRAY = [XPATH_FOOTER_TERMS, XPATH_FOOTER_PRIVACY, XPATH_FOOTER_CONTACT, XPATH_FOOTER_ADVERTISING, XPATH_FOOTER_MOMCOM, XPATH_FOOTER_CAFEMOM, XPATH_FOOTER_ML, XPATH_FOOTER_BABYNAME, XPATH_FOOTER_LT, XPATH_FOOTER_REVELIST];\nvar TEXT_ARRAY = ['TERMS', 'PRIVACY', 'CONTACT', 'ADVERTISING', 'MOM.COM', 'CAFEMOM', 'MAMÁSLATINAS', 'BABY NAME WIZARD', 'LITTLETHINGS', 'REVELIST'];\ncy.log('#2 Scroll down to a footer section and check all company related links');\ncy.xpath(XPATH_FOOTER_ABOUT).contains('ABOUT').scrollIntoView();\ncy.xpath(XPATH_FOOTER_ABOUT).invoke('attr', 'href').then(function (hrefValue) {\n  cy.log('#3 Click About link');\n  cy.xpath(XPATH_FOOTER_ABOUT).contains('ABOUT').click();\n  cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n});\ncy.log('-Back to a homepage properly after clicking back button');\ncy.go('back');\ncy.reload();\ncy.url().should('eq', Cypress.config().baseUrl + '/');\ncy.log('Scroll down to a footer section and check all company related links');\ncy.xpath(XPATH_FOOTER_ABOUT).contains('ABOUT').scrollIntoView();\ncy.log('wait for email subscription modal loading');\ncy.get('div', {\n  timeout: 7000\n}).then(function ($div) {\n  // If there is email subscription modal, it should be closed. We do not need to verify it.\n  if ($div.hasClass('pf-widget-content')) {\n    cy.xpath('//button[@value=\"Cancel\"]').click({\n      force: true\n    });\n  }\n}); // Loop for step #4 to #13\nvar _loop = function _loop(i) {\n  cy.log('#' + (i + 4) + ' Verify ' + TEXT_ARRAY[i] + ' link');\n  cy.xpath(LINKS_ARRAY[i]).invoke('attr', 'href').then(function (hrefValue) {\n    // Skip verify target=_blank for mailto:\n    if (i != 2 && i != 3) {\n      cy.log('-Verify open new tab by *target=_blank* checking');\n      cy.xpath(LINKS_ARRAY[i]).should('have.attr', 'target', '_blank');\n      cy.log('-Verify request URL successfully');\n      cy.request(hrefValue, {\n        timeout: 7000\n      });\n      cy.request('https://www.cafemom.com');\n    }\n    cy.log('-Verify the link contains text and displays correctly');\n    cy.xpath(LINKS_ARRAY[i]).contains(TEXT_ARRAY[i]).should('be.visible');\n    cy.log('---------------------------------------------------');\n  });\n};\nfor (var i = 0; i < LINKS_ARRAY.length; i++) {\n  _loop(i);\n}",
+              "err": {
+                "message": "AssertionError: Timed out retrying: Expected to find element: `undefined`, but never found it.",
+                "estack": "AssertionError: Timed out retrying: Expected to find element: `undefined`, but never found it.\n    at _loop (https://mom.com/__cypress/tests?p=cypress/integration/D_15_Footer_Links.js:148:10)\n    at Context.eval (https://mom.com/__cypress/tests?p=cypress/integration/D_15_Footer_Links.js:167:7)",
+                "diff": null
+              },
+              "uuid": "2f77b63f-37be-4bb7-a37b-d3740cfa9c98",
+              "parentUUID": "e218c23b-d69b-4ef8-aaaf-c15f30f109fc",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "2f77b63f-37be-4bb7-a37b-d3740cfa9c98"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 24332,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

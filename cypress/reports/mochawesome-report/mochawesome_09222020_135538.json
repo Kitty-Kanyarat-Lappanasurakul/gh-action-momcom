@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:55:05.148Z",
+    "end": "2020-09-22T06:55:38.049Z",
+    "duration": 32901,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "103fb232-89b2-4322-bcf7-e745d9f6259d",
+      "title": "",
+      "fullFile": "cypress/integration/D_01_Homepage.js",
+      "file": "cypress/integration/D_01_Homepage.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "55cc60a7-1b6c-4f0e-839c-687337d58bbe",
+          "title": "MOMCOM_D_01_Homepage",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify MOM.COM site is accesible including its logo and main module",
+              "fullTitle": "MOMCOM_D_01_Homepage Verify MOM.COM site is accesible including its logo and main module",
+              "timedOut": null,
+              "duration": 32582,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_GETTING_PREGNANT_LINK = '(//ul)[1]/li[1]/a';\nvar XPATH_GETTING_PREGNANT_SELECT = 'header > nav > div > div > ul > li:nth-child(1) > a';\nvar XPATH_LOGO_IMG = '//img[@src=\"/static/media/logo-momcom.faee38e5.svg\"]';\nvar XPATH_LOGO_LINK = '(//nav//a)[1]';\nvar XPATH_FEATURED_POST_IMG_LINK = '//div/div[1]/div[2]/div[1]/div/div[1]/div[1]/div/div/div[1]/a';\nvar XPATH_FEATURED_SELECT = '#root > div > div > div > div:nth-child(1) > div > div > div > div > div > div > a';\nvar XPATH_PARENT_SEE_MORE_BTN = '//div/div[1]/div[2]/div[1]/div/div[2]/div[2]/div[2]/a';\nvar XPATH_PARENT_SEE_MORE_SELECT = '#root > div > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > a';\nvar XPATH_MOM_LIFE_SEE_MORE_BTN = '//div/div[1]/div[2]/div[5]/div/div[2]/div[2]/a';\nvar XPATH_MOM_LIFE_SEE_MORE_SELECT = '#root > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div > a'; // Declare an array for testing steps #2 to #4 loop\nvar XPATH_ARRAY = [XPATH_GETTING_PREGNANT_LINK, XPATH_FEATURED_POST_IMG_LINK, XPATH_PARENT_SEE_MORE_BTN];\nvar XPATH_ARRAY_SELECT = [XPATH_GETTING_PREGNANT_SELECT, XPATH_FEATURED_SELECT, XPATH_PARENT_SEE_MORE_SELECT, XPATH_MOM_LIFE_SEE_MORE_SELECT]; // Declare an array for testing steps logs\nvar LOG_ARRAY = ['Getting Pregnant', 'Featured post', 'SEE MORE parenting', 'SEE MORE Mom life']; //This loop is for checking that each element in the XPATH_ARRAY_SELECT is existed or not. If it does not existed, then that element in the XPATH_ARRAY will be removed from the list\nvar _loop = function _loop(a) {\n  var existent = Cypress.$(XPATH_ARRAY_SELECT[a]);\n  if (existent.length) {\n    //If it found the element it will be here\n    cy.log('found');\n  } else {\n    //If it does not found it will be here\n    cy.log('not found');\n    XPATH_ARRAY = ((0, _readOnlyError2[\"default\"])(\"XPATH_ARRAY\"), XPATH_ARRAY.filter(function (item) {\n      return item !== XPATH_ARRAY[a];\n    }));\n  }\n};\nfor (var a = 0; a < XPATH_ARRAY.length; a++) {\n  _loop(a);\n} // Loop for testing step #2 to #4\n\nvar _loop2 = function _loop2(i) {\n  cy.log('#' + (i + 2) + ' Click on ' + LOG_ARRAY[i] + ' and verify URL'); // Get URL of element and click on it\n  cy.xpath(XPATH_ARRAY[i]).focus().invoke('attr', 'href').then(function (hrefValue) {\n    cy.log(LOG_ARRAY[i] + ' URL >>> ', hrefValue);\n    cy.xpath(XPATH_ARRAY[i]).then(function ($ele) {\n      cy.log($ele[0]);\n      if ($ele[0].hasAttribute('target', '_blank')) {\n        cy.log('Come over here');\n        cy.xpath(XPATH_ARRAY[i]).invoke('attr', 'href').then(function (href) {\n          cy.request(href).should(function (response) {\n            expect(response.status).to.eq(200);\n          });\n        });\n      } else {\n        cy.log('This does not have target __Blank');\n        cy.xpath(XPATH_ARRAY[i]).click({\n          force: true\n        });\n        cy.url().should('eq', Cypress.config().baseUrl + encodeURI(hrefValue));\n      }\n    });\n  }).then(function () {\n    cy.log('wait for email subscription modal loading');\n    cy.get('div', {\n      timeout: 7000\n    }).then(function ($div) {\n      // If there is email subscription modal, it should be closed. We do not need to verify it.\n      if ($div.hasClass('pf-widget-content')) {\n        cy.xpath('//button[@value=\"Cancel\"]').click({\n          force: true\n        });\n      }\n    });\n  }); // Click mom.com logo\n  cy.log('click on mom.com logo and back to homepage');\n  cy.wait(5000);\n  cy.xpath(XPATH_LOGO_IMG).should('be.visible');\n  cy.xpath(XPATH_LOGO_LINK).click();\n  cy.url().should('eq', Cypress.config().baseUrl + '/');\n};\nfor (var i = 0; i < XPATH_ARRAY.length; i++) {\n  _loop2(i);\n} // Click on see more momlife\n\ncy.log('#5 Click on SEE MORE momlife and verify URL');\ncy.xpath(XPATH_MOM_LIFE_SEE_MORE_BTN).focus().invoke('attr', 'href').then(function (hrefValue) {\n  cy.log('SEE MORE momlife URL >>> ', hrefValue);\n  cy.xpath(XPATH_MOM_LIFE_SEE_MORE_BTN).click();\n  cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n}); // Back to homepage\ncy.log('back to homepage');\ncy.go('back').then(function () {\n  cy.url().should('eq', Cypress.config().baseUrl + '/'); // Need to reload because the URL is not changed from previous URL\n  cy.reload();\n  cy.url().should('eq', Cypress.config().baseUrl + '/');\n});",
+              "err": {},
+              "uuid": "09b728ce-10b6-47d2-915a-66f8db8dac5b",
+              "parentUUID": "55cc60a7-1b6c-4f0e-839c-687337d58bbe",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "09b728ce-10b6-47d2-915a-66f8db8dac5b"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 32582,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

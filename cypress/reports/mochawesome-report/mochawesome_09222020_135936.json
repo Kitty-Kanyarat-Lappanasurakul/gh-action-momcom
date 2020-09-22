@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:59:15.824Z",
+    "end": "2020-09-22T06:59:36.563Z",
+    "duration": 20739,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "d3ab4e4c-83e6-4818-ae20-b2f372909a39",
+      "title": "",
+      "fullFile": "cypress/integration/D_08_Article_Shop.js",
+      "file": "cypress/integration/D_08_Article_Shop.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "bfd21536-b8b9-4a80-bb63-3356f13ea63c",
+          "title": "MOMCOM_D_08_Article_Shop",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify shop article page working properly",
+              "fullTitle": "MOMCOM_D_08_Article_Shop Verify shop article page working properly",
+              "timedOut": null,
+              "duration": 20506,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_FIRST_PRODUCT = '(//section//section)[1]';\nvar XPATH_SLIDE_IMG = '(//section//section//img)[1]';\nvar XPATH_SLIDE_TITLE = '(//section//section//h2)[1]';\nvar XPATH_SLIDE_PRICE = '(//section//section//span)[1]';\nvar XPATH_STORE_NAME_LINK = '((//section//section)[1]//span//a)';\nvar XPATH_SHOP_BUTTON_LINK = '((//section//section)[1]//a[normalize-space()=\"SHOP\"])';\nvar XPATH_COUNT_NUMBER = '//section//div[contains(@class,\"font-description\")]';\ncy.log('Verify URL of shoppable article');\ncy.visit(Cypress.config().baseUrl + articleURL);\ncy.url().should('eq', Cypress.config().baseUrl + articleURL); // Get the gallery slide (product slide and media slide) details of this post\ncy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{postCollection(where:{slug:' + articleRequestURL + '}){items{gallerySlidesCollection(limit:50){total,items{... on ProductSlide{title,slug,price,storeName,productLink,image{url}},... on MediaSlide{title,slug,image{url}}}}}}}').then(function (response) {\n  // All test steps below will verify the 1st product slide\n  cy.log('#2 Scroll down to the product slide (gallery slide)');\n  cy.xpath(XPATH_FIRST_PRODUCT).scrollIntoView().should('be.visible');\n  cy.log('-Verify url of product slide');\n  cy.wait(3000).url().should('eq', Cypress.config().baseUrl + articleURL + '/' + response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].slug); // If there is an image of product slide, we will verify an image URL is correct.\n  if (response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].image != null) {\n    cy.log('-Verify Image of product slide should display');\n    cy.xpath(XPATH_SLIDE_IMG).invoke('attr', 'src').should('contain', response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].image.url);\n    cy.xpath(XPATH_SLIDE_IMG).should('be.visible');\n  }\n  cy.log('-Verify Title of product slide should display');\n  cy.xpath(XPATH_SLIDE_TITLE).invoke('text').should('eq', response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].title);\n  cy.log('-Verify Price and Store name of product slide should display');\n  cy.xpath(XPATH_SLIDE_PRICE).invoke('text').should('eq', '$' + fixedPrice(response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].price) + ' from ' + response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].storeName);\n  cy.log('#3 Verify Product link (Store name) of product slide should display');\n  cy.xpath(XPATH_STORE_NAME_LINK).invoke('attr', 'href').should('eq', response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].productLink);\n  cy.log('-Verify open new tab when clicking on the store name');\n  cy.xpath(XPATH_STORE_NAME_LINK).should('have.attr', 'target', '_blank');\n  cy.log('#4 Verify Product link (SHOP button) of product slide should display');\n  cy.xpath(XPATH_SHOP_BUTTON_LINK).invoke('attr', 'href').should('eq', response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].productLink);\n  cy.log('-Verify open new tab when clicking on the SHOP button');\n  cy.xpath(XPATH_SHOP_BUTTON_LINK).should('have.attr', 'target', '_blank');\n  cy.log('-Verify a product link request is success');\n  cy.request(response.body.data.postCollection.items[0].gallerySlidesCollection.items[0].productLink);\n  cy.log('#5 Verify gallery slide counting number located on the top left of the slide');\n  cy.xpath(XPATH_COUNT_NUMBER).each(function ($el, index) {\n    cy.wrap($el).invoke('text').should('eq', index + 1 + '/' + response.body.data.postCollection.items[0].gallerySlidesCollection.total);\n    cy.wrap($el).should('be.visible');\n  });\n});",
+              "err": {},
+              "uuid": "2c103526-291a-4741-acc2-d580d18b5441",
+              "parentUUID": "bfd21536-b8b9-4a80-bb63-3356f13ea63c",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "2c103526-291a-4741-acc2-d580d18b5441"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 20506,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

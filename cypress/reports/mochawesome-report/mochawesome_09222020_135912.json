@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:58:52.344Z",
+    "end": "2020-09-22T06:59:12.453Z",
+    "duration": 20109,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "bfb27adb-c413-4bb7-8914-77f02ea51e67",
+      "title": "",
+      "fullFile": "cypress/integration/D_07_Article_Video.js",
+      "file": "cypress/integration/D_07_Article_Video.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "947e8c9e-7e5e-4773-8232-03efe2484b60",
+          "title": "MOMCOM_D_07_Article_Video",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify video article page working properly",
+              "fullTitle": "MOMCOM_D_07_Article_Video Verify video article page working properly",
+              "timedOut": null,
+              "duration": 19916,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_DISPLAYED_CATEGORY = '(//article//a)[1]';\nvar XPATH_DATE = '(//article//header//span)[1]';\nvar XPATH_AUTHOR_IMG_LINK = '(//article//header//a[contains(@href,\"author\")])[last()]';\nvar CSS_PLAY_VIDEO_BUTTON = 'div[class=\"jw-icon jw-icon-display jw-button-color jw-reset\"]';\nvar CSS_VIDEO_TIMER = 'div[class=\"jw-icon jw-icon-inline jw-text jw-reset jw-text-elapsed\"]';\nvar CSS_PAUSE_VIDEO_BUTTON = 'div[class=\"jw-icon jw-icon-display jw-button-color jw-reset\"]';\nvar startTime;\nvar pauseTime;\ncy.log('Verify URL of video page');\ncy.visit(Cypress.config().baseUrl + articleURL);\ncy.url().should('eq', Cypress.config().baseUrl + articleURL);\ncy.log('Verify Category appear centered at the top of the page');\ncy.xpath(XPATH_DISPLAYED_CATEGORY).should('be.visible');\ncy.log('Verify Title is centered at the top of the page under the Category');\ncy.get('h1').eq(0).should('be.visible');\ncy.log('Verify Published/Updated date appears underneath the title');\ncy.xpath(XPATH_DATE).should('be.visible');\ncy.log('Verify Author name appears underneath the title');\ncy.xpath(XPATH_AUTHOR_IMG_LINK).should('be.visible');\ncy.log('Verify JW player at the featured image position appear underneath the author');\ncy.get('video').eq(0).should('be.visible');\ncy.log('Verify the play video button should display before clicking on it');\ncy.get(CSS_PLAY_VIDEO_BUTTON).should('be.visible'); // Get time from the video before clicking on the play button\ncy.get(CSS_VIDEO_TIMER).invoke('text').then(function (time) {\n  startTime = time;\n});\ncy.log('#2 Click on the play video button');\ncy.get(CSS_PLAY_VIDEO_BUTTON).click();\ncy.log('Verify the play button should NOT appear after clicking on it');\ncy.get(CSS_PLAY_VIDEO_BUTTON).should('not.be.visible');\ncy.wait(5000);\ncy.get(CSS_VIDEO_TIMER).invoke('text').then(function (time) {\n  cy.log('Verify the current time of video should NOT be equal to the start time');\n  cy.wrap(time).should('not.eq', startTime);\n});\ncy.log('#3 Click on the pause video button');\ncy.get(CSS_PAUSE_VIDEO_BUTTON).click({\n  force: true\n}).then(function () {\n  // Get time from the video after clicking on the pause button\n  cy.get(CSS_VIDEO_TIMER).invoke('text').then(function (time) {\n    pauseTime = time;\n  });\n  cy.wait(3000);\n  cy.get(CSS_VIDEO_TIMER).invoke('text').then(function (time) {\n    cy.log('Verify the time is NOT changed after clicking the pause button');\n    cy.wrap(time).should('eq', pauseTime);\n  });\n});",
+              "err": {},
+              "uuid": "7ba5f3ee-6664-480a-a15b-60f5fd5aefc9",
+              "parentUUID": "947e8c9e-7e5e-4773-8232-03efe2484b60",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "7ba5f3ee-6664-480a-a15b-60f5fd5aefc9"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 19916,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

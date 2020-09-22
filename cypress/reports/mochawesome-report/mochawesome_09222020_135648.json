@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:56:17.135Z",
+    "end": "2020-09-22T06:56:48.160Z",
+    "duration": 31025,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "976ea4aa-67b9-4406-863b-803af42476d4",
+      "title": "",
+      "fullFile": "cypress/integration/D_04_Category.js",
+      "file": "cypress/integration/D_04_Category.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "bb94c855-ffa7-496c-888c-73b3baa40288",
+          "title": "MOMCOM_D_04_Category",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify Main Categories on Navigation bar is navigated and display banner image correctly",
+              "fullTitle": "MOMCOM_D_04_Category Verify Main Categories on Navigation bar is navigated and display banner image correctly",
+              "timedOut": null,
+              "duration": 30724,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var SRC_BANNER_IMAGE;\ncy.log('Count the items in Nav bar');\ncy.xpath(MAIN_CATE_NAV, {\n  timeout: 5000\n}).its('length').then(function (cateNavNum) {\n  //Do space in the log\n  cy.log('');\n  var _loop = function _loop(c) {\n    cy.log('');\n    cy.log('Prevent the Subscription mail and You Might Like popup');\n    cy.get('div', {\n      timeout: 7000\n    }).then(function ($div) {\n      if ($div.hasClass('pf-widget-content')) {\n        cy.get('div').find('button[class=\"pf-widget-close\"]').click({\n          force: true\n        });\n      }\n    });\n    cy.log('');\n    cy.log('# Get the attribute href of each Main Category on Nav bar ');\n    cy.xpath(MAIN_CATE_NAV, {\n      timeout: 5000\n    }).eq(c).invoke('attr', 'href').then(function (href) {\n      cy.log(href);\n      if (href.includes('.mom.com/')) {\n        cy.log('Do nothing because it will open new tab');\n      } else {\n        cy.log('');\n        cy.log('# Get the text in H1 on the Category page');\n        cy.xpath(MAIN_CATE_NAV, {\n          timeout: 5000\n        }).eq(c).click().get('h1').invoke('text').then(function (MainCate) {\n          cy.log('');\n          cy.log('#' + (c + 1) + ' Click ' + MainCate + ' Menu on Nav bar');\n          cy.xpath(BANNER_SECTION).then(function ($img) {\n            //$img[0] means convert jQuery element to HTML element then . children will let it display all children under the $img[0]\n            //The reason why to make length < 2 because when banner image does not set up the div element on frontend will not display and it causes the children under the $img[0] has only 1 child\n            cy.log($img[0].children);\n            if ($img[0].children.length < 2) {\n              SRC_BANNER_IMAGE = 'Do nothing';\n              cy.log('No Banner image');\n            } else {\n              cy.log('');\n              cy.log('# Get the Banner image in the Category page');\n              cy.xpath(BANNER_IMAGE, {\n                timeout: 5000\n              }).invoke('attr', 'src').then(function (src) {\n                //Cut the unnecessary parameters from the image URL which got from attribute src\n                SRC_BANNER_IMAGE = src.split('?');\n                cy.url().then(function (url) {\n                  cy.wait(2000).get('article').its('length').then(function (numArt) {\n                    if (url.includes('/series/')) {\n                      cy.log('');\n                      cy.log('#' + (c + 1) + ' Check ' + MainCate + ' Banner image');\n                      cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr/environments/' + ENVIRONMENT + '?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{seriesCollection(where:{title:' + '\"' + MainCate + '\"' + '}){items{title,bannerImage{url}}}}').then(function (response) {\n                        var img_banner = response.body.data.seriesCollection.items[0].bannerImage.url;\n                        expect(SRC_BANNER_IMAGE[0]).to.equal(img_banner);\n                      });\n                      cy.log('');\n                      cy.log('#' + (c + 1) + ' Check articles first load for ' + MainCate);\n                      cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr/environments/' + ENVIRONMENT + '?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{seriesCollection(where:{title:' + '\"' + MainCate + '\"' + '}){items{linkedFrom{postCollection{total}}}}}').then(function (response) {\n                        var numPosts = response.body.data.seriesCollection.items[0].linkedFrom.postCollection.total;\n                        cy.log('');\n                        cy.log('# Compare the first load articles between Frontand and Backend');\n                        if (numPosts < 10) {\n                          expect(numArt).to.equal(numPosts);\n                        } else {\n                          expect(numArt).to.equal(10);\n                        }\n                      });\n                    } else {\n                      cy.log('');\n                      cy.log('#' + (c + 1) + ' Check ' + MainCate + ' Banner image');\n                      cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr/environments/' + ENVIRONMENT + '?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{categoryCollection(where:{title:' + '\"' + MainCate + '\"' + '}){items{title,bannerImage{url}}}}').then(function (response) {\n                        var items = response.body.data.categoryCollection.items[0].bannerImage.url;\n                        expect(SRC_BANNER_IMAGE[0]).to.equal(items);\n                      });\n                      cy.log('');\n                      cy.log('#' + (c + 1) + ' Check articles first load for ' + MainCate);\n                      cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr/environments/' + ENVIRONMENT + '?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{categoryPageCollection(where:{name:' + '\"' + MainCate + '\"' + '}){items{featurePostCollection{total, items{title}}}}}').then(function (response) {\n                        var featuredPosts = response.body.data.categoryPageCollection;\n                        var keepTitle = [];\n                        cy.log('# Verify the first load articles on frontend which include the featured posts');\n                        if (featuredPosts.items[0] === undefined || featuredPosts.items[0].featurePostCollection === undefined) {\n                          cy.get('article').its('length').should('be.lte', 10);\n                        } else {\n                          cy.wrap(featuredPosts.items[0].featurePostCollection.items).its('length').then(function (fixNum) {\n                            cy.log('This is fix num ' + fixNum);\n                            for (var a = 0; a < fixNum; a++) {\n                              cy.log(featuredPosts.items[0].featurePostCollection.items[a].title); //Add the featured post article into the array\n                              keepTitle.push(featuredPosts.items[0].featurePostCollection.items[a].title);\n                            } //This part will group the duplicate title to display only one\n\n                            var uniques = (0, _toConsumableArray2[\"default\"])(new Set(keepTitle)); //Count the article on frontend and sum with the featured post\n                            cy.get('article').its('length').should('be.lte', uniques.length + 10);\n                          });\n                        }\n                      });\n                    }\n                  });\n                });\n              });\n            }\n          });\n        });\n      }\n    });\n  };\n  for (var c = 0; c < cateNavNum; c++) {\n    _loop(c);\n  }\n});",
+              "err": {},
+              "uuid": "0fab1687-699c-4b9c-8a5c-089cafc9738f",
+              "parentUUID": "bb94c855-ffa7-496c-888c-73b3baa40288",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0fab1687-699c-4b9c-8a5c-089cafc9738f"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 30724,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

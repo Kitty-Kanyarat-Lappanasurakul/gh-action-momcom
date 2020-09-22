@@ -1,0 +1,109 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2020-09-22T06:55:42.381Z",
+    "end": "2020-09-22T06:56:03.393Z",
+    "duration": 21012,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "6a980dab-0be6-4ec2-9e2b-2fc2c7cf7bdb",
+      "title": "",
+      "fullFile": "cypress/integration/D_02_Search.js",
+      "file": "cypress/integration/D_02_Search.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "38781243-538d-4486-b550-bdb76485b4ef",
+          "title": "MOMCOM_D_02_Search",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify Search function with valid keyword and search result page",
+              "fullTitle": "MOMCOM_D_02_Search Verify Search function with valid keyword and search result page",
+              "timedOut": null,
+              "duration": 20847,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "\"assets/D_02_Search.js/MOMCOM_D_02_Search -- Verify Search function with valid keyword and search result page (failed).png\"",
+              "code": "var KEYWORD = 'spaceship';\nvar CSS_SEARCH_ICON = 'button[class*=\"sharedStyles__ScIconButton\"]';\nvar CSS_SEARCH_INPUT = 'input[class*=\"NavbarDesktop__ScForwardRefSearchBox\"]';\nvar XPATH_ARTICLE_LINK = '//article/div/div/div/a'; // To store article URLs in search result page\nvar articleLinkArray = []; // To store duplicate articles in search result page\nvar findDuplicatesArray = []; // Declare function for finding duplicated article\nvar findDuplicates = function findDuplicates(arr) {\n  return arr.filter(function (item, index) {\n    return arr.indexOf(item) != index;\n  });\n}; // To store title/url/body of the 1st article in search result page\n\nvar articleTitle;\nvar articleURL;\nvar articleBody; // Click search icon #2\ncy.get(CSS_SEARCH_ICON).click(); // Verify search box appear with \"Search\" text and type keyword #2\ncy.log('#2 Verify search box appear with \"Search\" text and type keyword');\ncy.get(CSS_SEARCH_INPUT).invoke('attr', 'placeholder').should('eq', 'Search'); // Type keyword in search box\ncy.get(CSS_SEARCH_INPUT).type(KEYWORD); // Click search #2\ncy.get(CSS_SEARCH_ICON).click(); // Assert search result page url #2\ncy.log('#2 Verify URL of Search results page');\ncy.url().should('eq', Cypress.config().baseUrl + '/search/' + KEYWORD); // Article list on the first load must have 10 articles #2\ncy.log('#2 Verify Article list on the first load must have 10 articles');\ncy.wait(2000).get('article').should('have.length', 10); // Verify Image, Category, Title in <article> should display\ncy.log('#2 Verify Image, Category, Title in <article> should display for 10 first load articles');\ncy.get('article').each(function ($el, index) {\n  cy.log('<article> #', index + 1);\n  cy.wrap($el).within(function () {\n    cy.get('img').should('be.visible');\n    cy.get('div[class*=\"font-description\"]').should('be.visible');\n    cy.get('h2').should('be.visible');\n  });\n}); // Scroll down to see more articles load\ncy.window().scrollTo('bottom').wait(3000);\ncy.get('div').then(function ($div) {\n  // If there is you might like modal, it should be closed. We do not need to verify it.\n  if ($div.hasClass('pf-widget-content')) {\n    cy.xpath('//button[@class=\"pf-widget-close\"]').click({\n      force: true\n    });\n  }\n}); // Count <article> after load more\ncy.wait(3000).get('article').its('length').then(function (count) {\n  // Verify when load more, <article> should less than or equal to 20\n  cy.log('Verify <article> count after load more: ', count);\n  cy.expect(count).to.be.lessThan(21); // Verify heading in search result page\n  cy.log('Verify heading in search result page');\n  cy.get('h1').should('contain', count + ' results for \"' + KEYWORD + '\"');\n}); // Get article URL from image in <article> element\ncy.xpath(XPATH_ARTICLE_LINK).each(function ($el, index) {\n  cy.wrap($el).invoke('attr', 'href').then(function (hrefValue) {\n    // hrefValue is article URL and it will be stored to articleLinkArray[]\n    articleLinkArray[index] = hrefValue;\n    cy.log('Article URL [' + (index + 1) + '] >>> ', articleLinkArray[index]);\n  });\n}).then(function () {\n  // Verify duplicate article\n  cy.log('URL Array lenght:', articleLinkArray.length);\n  cy.log('Verify duplicate article');\n  findDuplicatesArray = findDuplicates(articleLinkArray);\n  cy.log('#3 Verify no duplicate article in search result page', findDuplicatesArray); // Expect duplicate array is empty\n  cy.wrap(findDuplicatesArray).should('be.empty');\n}).then(function () {\n  // Click the 1st article link\n  cy.get('article').eq(0).find('a').eq(0).click(); // Verify the 1st article URL after clicking on the 1st article in search result page\n  cy.log('Verify the current URL after clicking on the 1st article in search result page');\n  cy.url().should('eq', Cypress.config().baseUrl + articleLinkArray[0]);\n}); // Request swiftype api in order to verify the keyword match with the result\ncy.request('https://search-api.swiftype.com/api/v1/public/engines/search.json?engine_key=Uu_6FQyNSbnkFVns7QBe&&q=' + KEYWORD + '&filters[page][type][]=post&page=1&per_page=10').then(function (response) {\n  // Verify url/title/body in article must match with the keyword\n  // .includes() will return True or False\n  articleURL = response.body.records.page[0].url.toLowerCase().includes(KEYWORD);\n  articleTitle = response.body.records.page[0].title.toLowerCase().includes(KEYWORD);\n  articleBody = response.body.records.page[0].body.toLowerCase().includes(KEYWORD);\n  cy.log('keyword in url checking >> ' + articleURL);\n  cy.log('keyword in title checking >> ' + articleTitle);\n  cy.log('keyword in body checking >> ' + articleBody); // Verify the 1st article URL should be equal to the URL in swiftype response\n  cy.log('Verify the 1st article URL should be equal to the URL in swiftype response');\n  cy.wrap(response.body.records.page[0].url).should('eq', Cypress.config().baseUrl + articleLinkArray[0]); // Verify one of url/title/body in article must match with the keyword\n  cy.log('#4 Verify url/title/body in article must match with the keyword');\n  cy.wrap(articleTitle || articleURL || articleBody).should('be.true');\n});",
+              "err": {
+                "message": "AssertionError: Timed out retrying: expected '<h1.FancyHeader__ScTitleTextH1-sc-1301ubj-1.fugNAg.font-section-header-1>' to contain '20 results for \"spaceship\"'",
+                "estack": "AssertionError: Timed out retrying: expected '<h1.FancyHeader__ScTitleTextH1-sc-1301ubj-1.fugNAg.font-section-header-1>' to contain '20 results for \"spaceship\"'\n    at Context.eval (https://mom.com/__cypress/tests?p=cypress/integration/D_02_Search.js:169:20)",
+                "diff": null
+              },
+              "uuid": "368362e0-5525-46dc-a66c-12aaa831d487",
+              "parentUUID": "38781243-538d-4486-b550-bdb76485b4ef",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "368362e0-5525-46dc-a66c-12aaa831d487"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 20847,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

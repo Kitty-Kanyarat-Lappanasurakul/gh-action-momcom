@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T06:56:06.576Z",
+    "end": "2020-09-22T06:56:14.345Z",
+    "duration": 7769,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "bb2f087a-97aa-45c9-9607-81365198ef75",
+      "title": "",
+      "fullFile": "cypress/integration/D_03_Search_Invalid.js",
+      "file": "cypress/integration/D_03_Search_Invalid.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "edde4493-d6e2-4a93-9d54-fe03c6289196",
+          "title": "MOMCOM_D_03_Search_Invalid",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify Search function with invalid keyword and no search result page",
+              "fullTitle": "MOMCOM_D_03_Search_Invalid Verify Search function with invalid keyword and no search result page",
+              "timedOut": null,
+              "duration": 7609,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var KEYWORD = randomString() + 'Test';\nvar CSS_SEARCH_ICON = 'button[class*=\"sharedStyles__ScIconButton\"]';\nvar CSS_SEARCH_INPUT = 'input[class*=\"NavbarDesktop__ScForwardRefSearchBox\"]'; // Click search icon #2\ncy.get(CSS_SEARCH_ICON).click(); // Verify search box appear with \"Search\" text and type keyword #2\ncy.log('#2 Verify search box appear with \"Search\" text and type keyword');\ncy.get(CSS_SEARCH_INPUT).invoke('attr', 'placeholder').should('eq', 'Search'); // Type keyword in search box\ncy.get(CSS_SEARCH_INPUT).type(KEYWORD); // Click search #2\ncy.get(CSS_SEARCH_ICON).click(); // Assert search result page url #2\ncy.log('#2 Verify URL of Search results page');\ncy.url().should('eq', Cypress.config().baseUrl + '/search/' + KEYWORD); // Article list on the first load must have 10 articles #2\ncy.log('#2 Verify Article should NOT be loaded');\ncy.get('article').should('have.length', 0); // Verify heading in search result page\ncy.log('#2 Verify heading and message in search result page');\ncy.get('h1', {\n  timeout: 6000\n}).should('contain', '0 results for \"' + KEYWORD + '\"');\ncy.get('div').contains('Sorry, we were unable to find a match. Please try another keyword or explore our homepage.').should('be.visible');\ncy.get('div[class*=\"SearchPage__ScHomeButton\"]').first().contains('Go Home').should('be.visible').click();\ncy.log('#3 Verify URL of homepage after clicking GO HOME');\ncy.url().should('eq', Cypress.config().baseUrl + '/');",
+              "err": {},
+              "uuid": "404cd171-af1f-46f2-a330-fa91a49bfb23",
+              "parentUUID": "edde4493-d6e2-4a93-9d54-fe03c6289196",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "404cd171-af1f-46f2-a330-fa91a49bfb23"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 7609,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}

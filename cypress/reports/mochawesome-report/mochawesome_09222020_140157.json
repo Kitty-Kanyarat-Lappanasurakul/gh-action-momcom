@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-09-22T07:00:59.846Z",
+    "end": "2020-09-22T07:01:57.544Z",
+    "duration": 57698,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "9baeb1ff-78d8-4553-a677-83366fc2f816",
+      "title": "",
+      "fullFile": "cypress/integration/D_12A_Author_Page.js",
+      "file": "cypress/integration/D_12A_Author_Page.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "320e35a0-8447-49a9-8825-306c7b2da9fa",
+          "title": "MOMCOM_D_12A_Author_Page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify Author and Contributors page",
+              "fullTitle": "MOMCOM_D_12A_Author_Page Verify Author and Contributors page",
+              "timedOut": null,
+              "duration": 57377,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var XPATH_AUTHOR_NAME_LINK = '(//a[contains(@href,\"/author/\")])[2]';\nvar XPATH_AUTHOR_CONTRIBUTOR_PAGE = '(//div[contains(@class,\"font-small-body\")][2]//a)[2]';\nvar CSS_AUTHORS = 'div[class*=\"font-small-body\"]';\nvar XPATH_IG_ICON = '//a[contains(@aria-label,\"InstagramCircle\")]';\nvar XPATH_ARRAY = [XPATH_AUTHOR_NAME_LINK, XPATH_AUTHOR_CONTRIBUTOR_PAGE];\nvar LOG_ARRAY = ['in article page', 'in contributors page'];\nvar authorSlug;\nvar authorPostsTotal;\nvar authorId;\nvar totalAuthor;\nvar instagramURL;\nvar requestDate = new Date().toISOString();\ncy.log('Verify URL of article');\ncy.visit(Cypress.config().baseUrl + ARTICLE_URL);\ncy.url().should('eq', Cypress.config().baseUrl + ARTICLE_URL); // Loop for clicking on author and verifying the first load in author page\n// Step #2 to #4 when i=0\n// Step #5 to #6 when i=1\nvar _loop = function _loop(i) {\n  cy.log('Click on the author ' + LOG_ARRAY[i]);\n  cy.xpath(XPATH_ARRAY[i]).invoke('attr', 'href').then(function (hrefValue) {\n    cy.log(' URL >>> ', hrefValue);\n    authorSlug = hrefValue.split('/author/');\n    cy.xpath(XPATH_ARRAY[i]).click({\n      force: true\n    });\n    cy.log('-Verify url of author');\n    cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n    cy.log(authorSlug[1]);\n  }).then(function () {\n    // Get the author ID\n    cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{authorCollection(where:{slug:\"' + authorSlug[1] + '\"}){items{sys{id},instagramUrl,linkedFrom{postCollection{total}}}}}').then(function (response) {\n      authorId = response.body.data.authorCollection.items[0].sys.id;\n      instagramURL = response.body.data.authorCollection.items[0].instagramUrl;\n      cy.log('Author ID ' + authorId);\n      cy.log('Author instagramURL ' + instagramURL);\n    });\n  }).then(function () {\n    // Get the total posts\n    cy.request('https://mom.com/api/spaces/9l3tjzgyn9gr/environments/master/entries?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&content_type=post&include=1&fields.authors.sys.id=' + authorId + '&order=-fields.publishDate&limit=10&skip=0&fields.publishDate[lte]=' + requestDate).then(function (response) {\n      // authorPostsTotal =\n      //   response.body.data.authorCollection.items[0].linkedFrom.postCollection.total\n      // instagramURL = response.body.data.authorCollection.items[0].instagramUrl\n      cy.log('authorPostTotal restAPI: ' + response.body.total);\n      authorPostsTotal = response.body.total;\n      cy.wait(5000);\n      cy.log('-Verify the first load of author page');\n      if (authorPostsTotal < 10) {\n        cy.get('article').should('have.length', authorPostsTotal);\n      } else {\n        cy.get('article').should('have.length', 10);\n      }\n    });\n  }).then(function () {\n    // Step #3 Check social icon and #4 Click View All Contributors.\n    // For steps #5, back to the loop i=1\n    if (i === 0) {\n      cy.log('-Verify the instagram icon (if available)');\n      if (instagramURL != null) {\n        cy.log(instagramURL);\n        cy.xpath(XPATH_IG_ICON).invoke('attr', 'href').then(function (hrefValue) {\n          cy.log('-Verify Request the IG successfully');\n          cy.wrap(hrefValue).should('eq', instagramURL);\n          cy.request(hrefValue);\n        });\n        cy.log('-Verify open new tab when clicking on the IG icon');\n        cy.xpath(XPATH_IG_ICON).should('have.attr', 'target', '_blank');\n      }\n      cy.log('Click on VIEW ALL CONTRIBUTORS');\n      cy.get('a').contains('VIEW ALL CONTRIBUTORS').invoke('attr', 'href').then(function (hrefValue) {\n        cy.log(' URL >>> ', hrefValue);\n        cy.get('a').contains('VIEW ALL CONTRIBUTORS').click();\n        cy.log('-Verify url of contributors page');\n        cy.url().should('eq', Cypress.config().baseUrl + hrefValue);\n      }); // Get the total of Author Index Page module\n      cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr/?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{authorIndexPageCollection{items{featureAuthorsCollection{total}}}}').then(function (response) {\n        totalAuthor = response.body.data.authorIndexPageCollection.items[0].featureAuthorsCollection.total;\n        cy.log('Total of Author Index Page >> ' + totalAuthor); // Calculate the fisrt load for contributors page\n        totalAuthor = (Math.floor(totalAuthor / 6) + 1) * 6;\n        cy.log('Total of First Load >> ' + totalAuthor);\n        cy.log('-Verify the first load of contributors page');\n        cy.wait(3000).get(CSS_AUTHORS).should('have.length', totalAuthor);\n        cy.log('-Verify the authors profile display on the first load');\n        cy.get(CSS_AUTHORS).each(function ($el) {\n          cy.wrap($el).find('img').should('be.visible');\n          cy.wrap($el).find('h3').should('be.visible');\n        }); // Verify the author image\n        var authorImgCheck;\n        var authorImgURL;\n        cy.log('-Verify the author image displays properly for the top authors in the contributor page');\n        var _loop2 = function _loop2(_i) {\n          cy.xpath('(//div[contains(@class,\"font-small-body\")][' + _i + ']//a)[2]').invoke('attr', 'href').then(function (hrefValue) {\n            cy.log(' URL >>> ', hrefValue);\n            authorSlug = hrefValue.split('/author/');\n            cy.log(authorSlug[1]);\n          }).then(function () {\n            // Get image url of author\n            cy.request('https://graphql.contentful.com/content/v1/spaces/9l3tjzgyn9gr?access_token=1wNApzdgTuDomDUVawIO9n5JaShP2Q2MwwI5oxtqT8c&query=query{authorCollection(where:{slug:\"' + authorSlug[1] + '\"}){items{image{url}}}}').then(function (response) {\n              authorImgCheck = response.body.data.authorCollection.items[0].image; // If there is the author image, the author image should match the author url in contentful\n              if (authorImgCheck != null) {\n                authorImgURL = ('' + response.body.data.authorCollection.items[0].image.url).split('https:');\n                cy.log(authorImgURL[1]);\n                cy.log('-Verify author image #' + _i);\n                cy.xpath('(//div[contains(@class,\"font-small-body\")][' + _i + ']//img)').invoke('attr', 'src').then(function (hrefValue) {\n                  cy.log(' IMG URL >>> ', hrefValue);\n                  cy.wrap(hrefValue).should('contain', authorImgURL[1]);\n                }); // If there is no author image, the default author image should display\n              } else if (authorImgCheck === null) {\n                cy.log('-Verify author image #' + _i);\n                cy.xpath('(//div[contains(@class,\"font-small-body\")][' + _i + ']//img)').invoke('attr', 'src').then(function (hrefValue) {\n                  cy.log(' IMG URL >>> ', hrefValue);\n                  cy.wrap(hrefValue).should('contain', '/static/media/icon-author-placeholder.ac0b1375.svg');\n                });\n              }\n            });\n          });\n        };\n        for (var _i = 1; _i <= totalAuthor; _i++) {\n          _loop2(_i);\n        } //end loop \"verify author image\"\n      });\n    } // Step #6 Click back to a contributors page\n\n    if (i === 1) {\n      cy.log('Back to the contributors page and verify url');\n      cy.go('back'); // Need to reload because the URL is not changed from previous URL\n      cy.reload();\n      cy.url().should('eq', Cypress.config().baseUrl + '/author');\n    }\n  });\n};\nfor (var i = 0; i < XPATH_ARRAY.length; i++) {\n  _loop(i);\n}",
+              "err": {},
+              "uuid": "4b34c5dc-00b6-4a6e-a65e-21012b252538",
+              "parentUUID": "320e35a0-8447-49a9-8825-306c7b2da9fa",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "4b34c5dc-00b6-4a6e-a65e-21012b252538"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 57377,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false
+      },
+      "version": "4.1.0"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "4.1.0"
+    }
+  }
+}
